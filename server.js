@@ -5,6 +5,10 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
+const path = require('path');
+
+// Serve arquivos estáticos do frontend
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Conectar ao MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI)
