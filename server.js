@@ -7,12 +7,10 @@ app.use(cors());
 app.use(express.json());
 
 // Conectar ao MongoDB Atlas
-mongoose.connect('mongodb+srv://carolwessler:pTpMxrJDQYCDMSdE@cluster0.mje4eku.mongodb.net/tasks?retryWrites=true&w=majority', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('Conectado ao MongoDB Atlas'))
-.catch(err => console.error('Erro de conexão:', err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Conectado ao MongoDB Atlas'))
+  .catch(err => console.error('Erro de conexão:', err));
+
 
 // Modelo de tarefa
 const Task = mongoose.model('Task', {
