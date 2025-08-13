@@ -15,7 +15,7 @@ function addDragEvents(element) {
   element.addEventListener('dragstart', (e) => {
     draggedTask = element;
     e.dataTransfer.effectAllowed = 'move';
-  });
+  });	
 
   element.addEventListener('dragend', () => {
     draggedTask = null;
