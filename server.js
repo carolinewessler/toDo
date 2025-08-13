@@ -41,5 +41,10 @@ app.put('/tasks/:id', async (req, res) => {
   res.json(task);
 });
 
+app.delete('/tasks/:id', async (req, res) => {
+	await Task.findByIdAndDelete(req.params.id);
+	res.json({ message: 'Tarefa deletada com sucesso' });
+	});
+
 // Rodar o servidor
 app.listen(3000, () => console.log('Servidor rodando na porta 3000'));
