@@ -15,7 +15,7 @@ function addDragEvents(element) {
   element.addEventListener('dragstart', (e) => {
     draggedTask = element;
     e.dataTransfer.effectAllowed = 'move';
-  });	
+  });  
 
   element.addEventListener('dragend', () => {
     draggedTask = null;
@@ -62,20 +62,7 @@ async function loadTasks() {
   const tasks = await response.json();
 
   tasks.forEach(t => {
-    const taskLine = document.createElement('div');
-    const task = document.createElement('p');
-    taskLine.classList.add('taskline');
-    taskLine.setAttribute('draggable', 'true');
-    taskLine.dataset.id = t._id;
-
-    task.innerText = t.titulo;
-
-    if (t.status === 'todo') tags.todo.appendChild(taskLine);
-    else if (t.status === 'inprocess') tags.inprocess.appendChild(taskLine);
-    else tags.done.appendChild(taskLine);
-
-    taskLine.appendChild(task);
-    addDragEvents(taskLine);
+    createTaskLine(t);
   });
 }
 
@@ -88,23 +75,43 @@ async function saveTask(titulo) {
   return await response.json();
 }
 
+// ------------------ Criação de tarefa ------------------
+function createTaskLine(t) {
+  const taskLine = document.createElement('div');
+  const task = document.createElement('p');
+  const deleteBtn = document.createElement('button');
+
+  taskLine.classList.add('taskline');
+  taskLine.setAttribute('draggable', 'true');
+  taskLine.dataset.id = t._id;
+
+  task.innerText = t.titulo;
+  taskLine.appendChild(task);
+
+  // Botão de apagar
+  deleteBtn.innerText = '🗑️';
+  deleteBtn.classList.add('delete-btn');
+  deleteBtn.addEventListener('click', async () => {
+    await fetch(`${API_URL}/tasks/${taskLine.dataset.id}`, { method: 'DELETE' });
+    taskLine.remove();
+  });
+  taskLine.appendChild(deleteBtn);
+
+  // Adiciona na coluna correta
+  if (t.status === 'todo') tags.todo.appendChild(taskLine);
+  else if (t.status === 'inprocess') tags.inprocess.appendChild(taskLine);
+  else tags.done.appendChild(taskLine);
+
+  addDragEvents(taskLine);
+}
+
+// ------------------ Botão de adicionar tarefa ------------------
 async function button() {
   if (tags.input.value === '') return alert('no tasks');
 
   const newTask = await saveTask(tags.input.value);
-
-  const taskLine = document.createElement('div');
-  const task = document.createElement('p');
-  taskLine.classList.add('taskline');
-  taskLine.setAttribute('draggable', 'true');
-  taskLine.dataset.id = newTask._id;
-
-  task.innerText = newTask.titulo;
-  taskLine.appendChild(task);
-  tags.todo.appendChild(taskLine);
+  createTaskLine(newTask);
   tags.input.value = '';
-
-  addDragEvents(taskLine);
 }
 
 // ------------------ Eventos de Botão e Enter ------------------
